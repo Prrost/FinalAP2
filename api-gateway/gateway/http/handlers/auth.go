@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupAuth(group *gin.RouterGroup, grpcClient *clients.Client, cfg *config.Config) {
+func SetupUser(group *gin.RouterGroup, grpcClient *clients.Client, cfg *config.Config) {
 
 	group.POST("/register", func(c *gin.Context) {
 		RegisterUser(c, grpcClient)

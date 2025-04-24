@@ -15,12 +15,12 @@ func SetupRouter(cfg *config.Config, grpcClient *clients.Client) *gin.Engine {
 
 	productsGroup := apiGroup.Group("/products")
 	ordersGroup := apiGroup.Group("/orders")
-	authGroup := apiGroup.Group("/auth")
+	userGroup := apiGroup.Group("/user")
 
 	productsGroup.Use(middleware.AuthMiddleware(cfg))
 	ordersGroup.Use(middleware.AuthMiddleware(cfg))
 
-	SetupAuth(authGroup, grpcClient)
+	SetupUser(userGroup, grpcClient)
 
 	return router
 }
