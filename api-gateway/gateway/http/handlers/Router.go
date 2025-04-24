@@ -20,7 +20,7 @@ func SetupRouter(cfg *config.Config, grpcClient *clients.Client) *gin.Engine {
 	productsGroup.Use(middleware.AuthMiddleware(cfg))
 	ordersGroup.Use(middleware.AuthMiddleware(cfg))
 
-	SetupUser(userGroup, grpcClient)
+	SetupUser(userGroup, grpcClient, cfg)
 
 	return router
 }
