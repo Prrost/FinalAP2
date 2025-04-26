@@ -29,8 +29,9 @@ func LoadConfig() *Config {
 		}
 	} else {
 		return &Config{
-			Port:      os.Getenv("PORT"),
-			JWTSecret: os.Getenv("JWT_SECRET"),
+			Port:        os.Getenv("PORT"),
+			JWTSecret:   os.Getenv("JWT_SECRET"),
+			UserService: os.Getenv("USER_SERVICE"),
 		}
 	}
 }
