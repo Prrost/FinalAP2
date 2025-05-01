@@ -7,24 +7,28 @@ import {
   Paper,
   Container,
   Link,
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Register() {
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
     password: '',
-    confirmPassword: '',
+    isAdmin: false,
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: name === 'isAdmin' ? value === 'true' : value, 
     });
   };
 
@@ -36,10 +40,10 @@ function Register() {
     }
 
     try {
-      await axios.post('http://localhost:8081/api/auth/register', {
-        username: formData.username,
+      await axios.post('http://localhost:8081', {
         email: formData.email,
         password: formData.password,
+        isAdmin: formData.isAdmin,
       });
       navigate('/login');
     } catch (error) {
@@ -63,18 +67,6 @@ function Register() {
             margin="normal"
             required
             fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
-            autoFocus
-            value={formData.username}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
             id="email"
             label="Email Address"
             name="email"
@@ -94,18 +86,26 @@ function Register() {
             value={formData.password}
             onChange={handleChange}
           />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            autoComplete="new-password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
+          <FormControl component="fieldset" margin="normal" fullWidth>
+            <Typography variant="subtitle1">Admin Status</Typography>
+            <RadioGroup
+              name="isAdmin"
+              value={formData.isAdmin.toString()} // Convert boolean to string for RadioGroup
+              onChange={handleChange}
+              row
+            >
+              <FormControlLabel
+                value="true"
+                control={<Radio />}
+                label="Admin"
+              />
+              <FormControlLabel
+                value="false"
+                control={<Radio />}
+                label="User"
+              />
+            </RadioGroup>
+          </FormControl>
           <Button
             type="submit"
             fullWidth
@@ -125,4 +125,4 @@ function Register() {
   );
 }
 
-export default Register; 
+export default Register;

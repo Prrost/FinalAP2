@@ -13,7 +13,7 @@ import axios from 'axios';
 
 function Login() {
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
   });
   const [error, setError] = useState('');
@@ -29,7 +29,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8081/api/auth/login', formData);
+      const response = await axios.post('http://localhost:8081', formData);
       localStorage.setItem('token', response.data.token);
       navigate('/');
     } catch (error) {
@@ -53,12 +53,12 @@ function Login() {
             margin="normal"
             required
             fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
+            id="email"
+            label="Email"
+            name="email"
+            autoComplete="email"
             autoFocus
-            value={formData.username}
+            value={formData.email}
             onChange={handleChange}
           />
           <TextField
