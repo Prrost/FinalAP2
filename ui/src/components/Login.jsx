@@ -36,11 +36,11 @@ function Login() {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:8081/login', {
+      const response = await axios.post('http://localhost:8080/api/user/login', {
         email: formData.email,
         password: formData.password,
       });
-      
+
       // Store the token in localStorage
       localStorage.setItem('token', response.data.token);
       navigate('/');

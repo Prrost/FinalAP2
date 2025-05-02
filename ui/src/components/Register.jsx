@@ -41,7 +41,7 @@ function Register() {
     setError('');
 
     try {
-      await axios.post('http://localhost:8081/register', {
+      await axios.post('http://localhost:8080/api/user/register', {
         email: formData.email,
         password: formData.password,
         isAdmin: formData.isAdmin,
