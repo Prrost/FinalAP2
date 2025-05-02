@@ -13,6 +13,7 @@ type Config struct {
 	UserService      string
 	JWTSecret        string
 	DBPath           string
+	Front            string
 }
 
 func LoadConfig() *Config {
@@ -26,12 +27,14 @@ func LoadConfig() *Config {
 		return &Config{
 			Port:      os.Getenv("PORT"),
 			JWTSecret: os.Getenv("JWT_SECRET"),
+			Front:     os.Getenv("FRONT"),
 		}
 	} else {
 		return &Config{
 			Port:        os.Getenv("PORT"),
 			JWTSecret:   os.Getenv("JWT_SECRET"),
 			UserService: os.Getenv("USER_SERVICE"),
+			Front:       os.Getenv("FRONT"),
 		}
 	}
 }
