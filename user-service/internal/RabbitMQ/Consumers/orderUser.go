@@ -121,7 +121,7 @@ func (c *Consumer) StartConsuming(ctx context.Context) error {
 						switch st.Code() {
 						case codes.InvalidArgument:
 							log.Printf("[%s]Invalid credentials: %s", op, st.Message())
-							_ = msg.Nack(false, false)
+							_ = msg.Ack(false)
 						case codes.Internal:
 							log.Printf("[%s]Internal error: %s", op, st.Message())
 							_ = msg.Nack(false, false)
@@ -136,6 +136,7 @@ func (c *Consumer) StartConsuming(ctx context.Context) error {
 						log.Printf("[%s]Unknown error: %s", op, err.Error())
 						_ = msg.Nack(false, false)
 					}
+					continue
 				}
 				err = msg.Ack(false)
 				if err != nil {
