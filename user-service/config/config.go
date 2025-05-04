@@ -10,6 +10,7 @@ type Config struct {
 	Port      string
 	JWTSecret string
 	DBPath    string
+	RMQ       string
 }
 
 func LoadConfig() *Config {
@@ -22,5 +23,6 @@ func LoadConfig() *Config {
 		Port:      os.Getenv("PORT"),
 		DBPath:    os.Getenv("DB_PATH"),
 		JWTSecret: os.Getenv("JWT_SECRET"),
+		RMQ:       os.Getenv("RMQ"),
 	}
 }
