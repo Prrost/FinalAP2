@@ -1,25 +1,34 @@
 package clients
 
 import (
+	"context"
+
 	"api-gateway/config"
 	"api-gateway/gateway/grpc/clients/subClients"
-	"context"
+
+	bookpb "github.com/Prrost/protoFinalAP2/books"
 	userpb "github.com/Prrost/protoFinalAP2/user"
 )
 
 type Client struct {
 	UserClient userpb.UserServiceClient
+	BookClient bookpb.BookServiceClient
 }
 
 func NewMainClient(ctx context.Context, cfg *config.Config) (*Client, []error) {
-	errArr := make([]error, 0)
+	errs := []error{}
 
-	userClient, err := subClients.InitUserClient(ctx, *cfg)
+	uc, err := subClients.InitUserClient(ctx, *cfg)
 	if err != nil {
-		errArr = append(errArr, err)
+		errs = append(errs, err)
+	}
+	bc, err := subClients.InitBookClient(ctx, *cfg)
+	if err != nil {
+		errs = append(errs, err)
 	}
 
 	return &Client{
-		UserClient: userClient,
-	}, errArr
+		UserClient: uc,
+		BookClient: bc,
+	}, errs
 }

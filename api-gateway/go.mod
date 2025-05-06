@@ -6,7 +6,7 @@ toolchain go1.23.4
 
 require (
 	github.com/Prrost/assignment1proto v0.0.0-20250415071722-3672e5d7c8ac
-	github.com/Prrost/protoFinalAP2 v0.0.0-20250425090714-0f946ae73d92
+	github.com/Prrost/protoFinalAP2 v0.0.0-20250505065838-82b7b58ea42e
 	github.com/gin-contrib/cors v1.7.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
