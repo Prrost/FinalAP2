@@ -17,9 +17,9 @@ func NewOrderRepo(db *sql.DB) domain.OrderRepository {
 }
 
 func (r *orderRepo) Create(o *domain.Order) error {
-	stmt := `INSERT INTO orders(user_id, book_id, taken_at, due_at, waiting)
+	stmt := `INSERT INTO orders(user_email, book_id, taken_at, due_at, waiting)
              VALUES (?, ?, ?, ?, ?)`
-	res, err := r.db.Exec(stmt, o.UserID, o.BookID, o.TakenAt, o.DueAt, o.Waiting)
+	res, err := r.db.Exec(stmt, o.UserEmail, o.BookID, o.TakenAt, o.DueAt, o.Waiting)
 	if err != nil {
 		return err
 	}
@@ -29,12 +29,12 @@ func (r *orderRepo) Create(o *domain.Order) error {
 
 func (r *orderRepo) GetByID(id int64) (*domain.Order, error) {
 	row := r.db.QueryRow(
-		`SELECT id, user_id, book_id, taken_at, due_at, returned_at, waiting
+		`SELECT id, user_email, book_id, taken_at, due_at, returned_at, waiting
          FROM orders WHERE id = ?`, id,
 	)
 	var o domain.Order
 	var ret sql.NullTime
-	if err := row.Scan(&o.ID, &o.UserID, &o.BookID, &o.TakenAt, &o.DueAt, &ret, &o.Waiting); err != nil {
+	if err := row.Scan(&o.ID, &o.UserEmail, &o.BookID, &o.TakenAt, &o.DueAt, &ret, &o.Waiting); err != nil {
 		return nil, err
 	}
 	if ret.Valid {
@@ -45,7 +45,7 @@ func (r *orderRepo) GetByID(id int64) (*domain.Order, error) {
 
 func (r *orderRepo) ListWaiting(bookID int64) ([]*domain.Order, error) {
 	rows, err := r.db.Query(
-		`SELECT id, user_id, book_id, taken_at, due_at, returned_at, waiting
+		`SELECT id, user_email, book_id, taken_at, due_at, returned_at, waiting
          FROM orders WHERE book_id = ? AND waiting = 1`, bookID,
 	)
 	if err != nil {
@@ -57,7 +57,7 @@ func (r *orderRepo) ListWaiting(bookID int64) ([]*domain.Order, error) {
 	for rows.Next() {
 		var o domain.Order
 		var ret sql.NullTime
-		if err := rows.Scan(&o.ID, &o.UserID, &o.BookID, &o.TakenAt, &o.DueAt, &ret, &o.Waiting); err != nil {
+		if err := rows.Scan(&o.ID, &o.UserEmail, &o.BookID, &o.TakenAt, &o.DueAt, &ret, &o.Waiting); err != nil {
 			return nil, err
 		}
 		if ret.Valid {

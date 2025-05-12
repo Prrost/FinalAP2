@@ -18,7 +18,7 @@ func NewOrderHandler(uc *usecase.OrderUsecase) *OrderHandler {
 }
 
 func (h *OrderHandler) CreateOrder(ctx context.Context, req *pb.CreateOrderReq) (*pb.CreateOrderRes, error) {
-	o, err := h.uc.CreateOrder(req.UserId, req.BookId, int(req.DueDays))
+	o, err := h.uc.CreateOrder(req.UserEmail, req.BookId, int(req.DueDays))
 	if err != nil {
 		logger.Log.Errorf("CreateOrder error: %v", err)
 		return nil, err
@@ -27,7 +27,7 @@ func (h *OrderHandler) CreateOrder(ctx context.Context, req *pb.CreateOrderReq) 
 }
 
 func (h *OrderHandler) ReturnOrder(ctx context.Context, req *pb.ReturnOrderReq) (*pb.ReturnOrderRes, error) {
-	if err := h.uc.ReturnOrder(req.OrderId); err != nil {
+	if _, err := h.uc.ReturnOrder(req.OrderId); err != nil {
 		logger.Log.Errorf("ReturnOrder error: %v", err)
 		return nil, err
 	}

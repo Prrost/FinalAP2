@@ -4,7 +4,7 @@ import "time"
 
 type Order struct {
 	ID         int64
-	UserID     int64
+	UserEmail  string
 	BookID     int64
 	TakenAt    time.Time
 	DueAt      time.Time
