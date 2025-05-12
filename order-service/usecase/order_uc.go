@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"github.com/Prrost/FinalAP2/order-service/publisher"
+	"log"
 	"time"
 
 	"github.com/Prrost/FinalAP2/order-service/domain"
@@ -8,10 +10,16 @@ import (
 
 type OrderUsecase struct {
 	repo domain.OrderRepository
+	RMQ  *publisher.OrderCreatedPublisher
 }
 
 func NewOrderUC(r domain.OrderRepository) *OrderUsecase {
-	return &OrderUsecase{repo: r}
+	OCPublisher, err := publisher.NewOrderCreatedPublisher("amqp://guest:guest@localhost:5672/")
+	if err != nil {
+		log.Fatal(err)
+		return &OrderUsecase{}
+	}
+	return &OrderUsecase{repo: r, RMQ: OCPublisher}
 }
 
 func (u *OrderUsecase) CreateOrder(userEmail string, bookID int64, dueDays int) (*domain.Order, error) {
@@ -23,6 +31,10 @@ func (u *OrderUsecase) CreateOrder(userEmail string, bookID int64, dueDays int) 
 		Waiting:   false,
 	}
 	if err := u.repo.Create(o); err != nil {
+		return nil, err
+	}
+	err := u.RMQ.OrderCreatedPublish(userEmail)
+	if err != nil {
 		return nil, err
 	}
 	return o, nil

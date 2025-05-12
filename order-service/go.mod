@@ -6,6 +6,7 @@ require (
 	github.com/Prrost/protoFinalAP2 v0.0.0-20250512064511-2117e5f4a210
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/nats-io/nats.go v1.42.0
+	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/grpc v1.72.0
 )
