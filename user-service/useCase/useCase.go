@@ -1,10 +1,13 @@
 package useCase
 
 import (
+	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -13,18 +16,23 @@ import (
 	"time"
 	"user-service/Storage"
 	"user-service/Storage/Sqlite"
+	"user-service/Storage/cache"
 	"user-service/config"
 	"user-service/domain"
 )
 
 type UseCase struct {
 	storage Storage.Storage
+	redis   *redis.Client
 	cfg     *config.Config
 }
 
 func NewUseCase(storage Storage.Storage, cfg *config.Config) *UseCase {
+	rdb := cache.NewRedis()
+
 	return &UseCase{
 		storage: storage,
+		redis:   rdb,
 		cfg:     cfg,
 	}
 }
@@ -154,6 +162,9 @@ func (uc *UseCase) LoginUser(user domain.User) (string, error) {
 
 func (uc *UseCase) GetUserByID(id string) (domain.User, error) {
 	const op = "getUserByID"
+	var user domain.User
+
+	ctx := context.Background()
 
 	//Ascii to Int
 	idInt, err := strconv.Atoi(id)
@@ -161,8 +172,26 @@ func (uc *UseCase) GetUserByID(id string) (domain.User, error) {
 		return domain.User{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
+	res, err := uc.redis.Get(ctx, id).Result()
+	if err == nil {
+		err = json.Unmarshal([]byte(res), &user)
+		if err != nil {
+			log.Printf("[%s] error with cache json unmarshal: %v", op, err)
+			return domain.User{}, status.Error(codes.Internal, err.Error())
+		}
+		log.Printf("[%s] user profile is found in cache", op)
+		return user, nil
+	} else {
+		if errors.Is(err, redis.Nil) {
+			log.Printf("[%s] user not found in cache", op)
+		} else {
+			log.Printf("[%s] Error with cache", op)
+			return domain.User{}, status.Error(codes.Internal, err.Error())
+		}
+	}
+
 	//find in storage
-	user, err := uc.storage.GetUserByID(idInt)
+	user, err = uc.storage.GetUserByID(idInt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Printf("[%s] user not found in db: %v", op, err)
@@ -172,15 +201,47 @@ func (uc *UseCase) GetUserByID(id string) (domain.User, error) {
 		return domain.User{}, status.Error(codes.Internal, err.Error())
 	}
 
-	log.Printf("[%s] user profile is found", op)
+	userJson, err := json.Marshal(user)
+	if err != nil {
+		log.Printf("[%s] error with json marshal: %v", op, err)
+		return domain.User{}, status.Error(codes.Internal, err.Error())
+	}
+	err = uc.redis.Set(ctx, id, userJson, time.Hour).Err()
+	if err != nil {
+		log.Printf("[%s] error with cache set: %v", op, err)
+		return domain.User{}, status.Error(codes.Internal, err.Error())
+	}
+	log.Printf("[%s] user profile is created in cache", op)
+
+	log.Printf("[%s] user profile is found successfully", op)
 	return user, nil
 }
 
 func (uc *UseCase) GetUserByEmail(email string) (domain.User, error) {
 	const op = "getUserByID"
+	ctx := context.Background()
+	user := domain.User{}
+
+	res, err := uc.redis.Get(ctx, email).Result()
+	if err == nil {
+		err = json.Unmarshal([]byte(res), &user)
+		if err != nil {
+			log.Printf("[%s] error with cache json unmarshal: %v", op, err)
+			return domain.User{}, status.Error(codes.Internal, err.Error())
+		}
+		log.Printf("[%s] user profile is found in cache", op)
+		return user, nil
+	} else {
+		if errors.Is(err, redis.Nil) {
+			log.Printf("[%s] user not found in cache", op)
+		} else {
+			log.Printf("[%s] Error with cache", op)
+			return domain.User{}, status.Error(codes.Internal, err.Error())
+		}
+	}
 
 	//find in storage
-	user, err := uc.storage.GetUserByEmail(email)
+	user, err = uc.storage.GetUserByEmail(email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Printf("[%s] user not found in db: %v", op, err)
@@ -190,6 +251,18 @@ func (uc *UseCase) GetUserByEmail(email string) (domain.User, error) {
 		return domain.User{}, status.Error(codes.Internal, err.Error())
 	}
 
-	log.Printf("[%s] user profile is found", op)
+	userJson, err := json.Marshal(user)
+	if err != nil {
+		log.Printf("[%s] error with json marshal: %v", op, err)
+		return domain.User{}, status.Error(codes.Internal, err.Error())
+	}
+	err = uc.redis.Set(ctx, email, userJson, time.Hour).Err()
+	if err != nil {
+		log.Printf("[%s] error with cache set: %v", op, err)
+		return domain.User{}, status.Error(codes.Internal, err.Error())
+	}
+	log.Printf("[%s] user profile is created in cache", op)
+
+	log.Printf("[%s] user profile is found successfully", op)
 	return user, nil
 }
