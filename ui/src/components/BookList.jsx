@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 
-const BookList = ({ isAdmin = false }) => {
+const BookList = ({ isAdmin = true }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,9 +11,7 @@ const BookList = ({ isAdmin = false }) => {
   const [newBook, setNewBook] = useState({
     title: '',
     author: '',
-    price: '',
-    quantity: '',
-    description: '',
+    availableQuantity: '',
     isbn: ''
   });
   const navigate = useNavigate();
@@ -29,15 +27,23 @@ const BookList = ({ isAdmin = false }) => {
           return;
         }
 
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+
         const response = await axios.get('http://localhost:8080/api/books', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setBooks(response.data);
+        
+        // Ensure we always set an array, even if the response is null
+        setBooks(response.data || []);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch books');
+        setBooks([]); // Reset books to empty array on error
         setLoading(false);
       }
     };
@@ -126,32 +132,35 @@ const BookList = ({ isAdmin = false }) => {
         )}
       </div>
       <div className="books-grid">
-        {books.map((book) => (
-          <div
-            key={book.id}
-            className="book-card"
-            onClick={() => handleBookClick(book.id)}
-          >
-            <h3>{book.title}</h3>
-            <p>Author: {book.author}</p>
-            <p>Price: ${book.price}</p>
-            <p>Available: {book.quantity}</p>
-            {isAdmin && (
-              <div className="book-actions">
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteBook(book.id);
-                  }}
-                >
-                  Delete
-                </Button>
-              </div>
-            )}
-          </div>
-        ))}
+        {Array.isArray(books) && books.length > 0 ? (
+          books.map((book) => (
+            <div
+              key={book.id}
+              className="book-card"
+              onClick={() => handleBookClick(book.id)}
+            >
+              <h3>{book.title}</h3>
+              <p>Author: {book.author}</p>
+              <p>Available: {book.availableQuantity}</p>
+              {isAdmin && (
+                <div className="book-actions">
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteBook(book.id);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>No books available.</p>
+        )}
       </div>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
@@ -172,14 +181,7 @@ const BookList = ({ isAdmin = false }) => {
             value={newBook.author}
             onChange={(e) => setNewBook({ ...newBook, author: e.target.value })}
           />
-          <TextField
-            margin="dense"
-            label="Price"
-            type="number"
-            fullWidth
-            value={newBook.price}
-            onChange={(e) => setNewBook({ ...newBook, price: e.target.value })}
-          />
+          
           <TextField
             margin="dense"
             label="Quantity"

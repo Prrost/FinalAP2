@@ -26,8 +26,8 @@ const OrderList = ({ isAdmin = false }) => {
         }
 
         const endpoint = isAdmin 
-          ? 'http://localhost:8080/admin/orders'
-          : 'http://localhost:8080/orders';
+          ? 'http://localhost:8080/api/admin/orders'
+          : 'http://localhost:8080/api/orders';
 
         const response = await axios.get(endpoint, {
           headers: {

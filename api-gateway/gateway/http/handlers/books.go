@@ -6,6 +6,7 @@ import (
 
 	"api-gateway/gateway/Response"
 	"api-gateway/gateway/grpc/clients"
+
 	bookpb "github.com/Prrost/protoFinalAP2/books"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/codes"
@@ -24,7 +25,7 @@ func SetupBooks(group *gin.RouterGroup, grpcClient *clients.Client) {
 		case codes.AlreadyExists:
 			c.JSON(http.StatusConflict, Response.Err{Error: st.Message()})
 		default:
-			c.JSON(http.StatusInternalServerError, Response.Err{Error: st.Message()})
+			c.JSON(http.StatusConflict, Response.Err{Error: st.Message()})
 		}
 	}
 

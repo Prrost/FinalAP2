@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"log"
 
 	bookpb "github.com/Prrost/protoFinalAP2/books"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -20,10 +21,13 @@ func NewServer(uc *useCase.UseCase) *Server {
 }
 
 func (s *Server) ListBooks(ctx context.Context, _ *emptypb.Empty) (*bookpb.BookList, error) {
+	log.Println("Entery")
 	books, err := s.uc.ListBooks()
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
+	log.Println("Ok")
 	resp := &bookpb.BookList{}
 	for _, b := range books {
 		resp.Books = append(resp.Books, &bookpb.Book{
