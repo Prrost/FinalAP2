@@ -6,6 +6,7 @@ import (
 	"api-gateway/config"
 	"api-gateway/gateway/grpc/clients"
 	"api-gateway/gateway/middleware" // путь к твоему middleware
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
