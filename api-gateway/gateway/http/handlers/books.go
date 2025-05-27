@@ -15,6 +15,9 @@ import (
 
 func SetupBooks(group *gin.RouterGroup, grpcClient *clients.Client) {
 	handleErr := func(c *gin.Context, err error) {
+		if err == nil {
+			return
+		}
 		st, _ := status.FromError(err)
 		switch st.Code() {
 		case codes.NotFound:
