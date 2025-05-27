@@ -41,8 +41,11 @@ function Login() {
         password: formData.password,
       });
 
-      // Store the token in localStorage
+      // Store the token and role in localStorage
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userRole', response.data.role);
+      
+      // Redirect to main page
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');

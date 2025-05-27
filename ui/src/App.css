@@ -1,8 +1,8 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
 .logo {
@@ -48,9 +48,9 @@
 }
 
 .main-content {
-  flex: 1;
   padding: 2rem;
-  max-width: 1200px;
+  min-height: calc(100vh - 64px);
+  max-width: 1400px;
   margin: 0 auto;
   width: 100%;
 }
@@ -60,9 +60,9 @@
 }
 
 .form-container {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 3rem;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -74,4 +74,213 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+}
+
+.book-list, .order-list {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.book-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.books-grid, .orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.book-card, .order-card {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-card:hover, .order-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.book-card h3, .order-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.book-card p, .order-card p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.book-details, .order-details {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  padding: 3rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.book-info, .order-info {
+  margin-top: 2rem;
+}
+
+.book-info p, .order-info p {
+  font-size: 1.1rem;
+  margin: 1rem 0;
+}
+
+.order-items {
+  margin: 2rem 0;
+}
+
+.order-item {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.order-item h4 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.order-item p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.shipping-info {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.order-button {
+  margin-top: 2rem;
+  padding: 1rem 2.5rem;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.2s;
+  width: auto;
+  min-width: 200px;
+}
+
+.order-button:hover {
+  background-color: #1565c0;
+}
+
+.order-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.3rem;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  padding: 2rem;
+  color: #d32f2f;
+  background: #ffebee;
+  border-radius: 8px;
+  margin: 2rem 0;
+  font-size: 1.1rem;
+}
+
+.order-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.admin-controls {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.status-select {
+  min-width: 200px;
+}
+
+.delete-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+}
+
+/* Admin-specific styles */
+.admin-view .book-card,
+.admin-view .order-card {
+  position: relative;
+}
+
+.admin-view .book-card:hover,
+.admin-view .order-card:hover {
+  transform: none;
+}
+
+.admin-view .book-actions,
+.admin-view .order-actions {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Dialog styles */
+.MuiDialog-paper {
+  min-width: 600px;
+  padding: 1rem;
+}
+
+.MuiDialogContent-root {
+  padding: 2rem !important;
+}
+
+.MuiTextField-root {
+  margin-bottom: 1.5rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .books-grid, .orders-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .book-list, .order-list {
+    padding: 0 1rem;
+  }
+  
+  .books-grid, .orders-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
 }
