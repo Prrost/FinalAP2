@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 
-const BookList = ({ isAdmin = true }) => {
+const BookList = ({ isAdmin = false }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,6 +12,7 @@ const BookList = ({ isAdmin = true }) => {
     title: '',
     author: '',
     availableQuantity: '',
+    totalQuantity: '',
     isbn: ''
   });
   const navigate = useNavigate();
@@ -61,19 +62,22 @@ const BookList = ({ isAdmin = true }) => {
 
   const handleAddBook = async () => {
     try {
+      console.log('Adding book', newBook);
       const token = localStorage.getItem('token');
       const userRole = localStorage.getItem('userRole');
-      
-      if (userRole !== 'ADMIN') {
-        alert('Only administrators can add books');
-        return;
-      }
 
-      await axios.post('http://localhost:8080/api/books', newBook, {
+
+
+      await axios.post('http://localhost:8080/api/books', {
+        ...newBook,
+        availableQuantity: parseInt(newBook.availableQuantity, 10),
+        totalQuantity: parseInt(newBook.totalQuantity, 10)
+      }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log('222222222', newBook);
       setOpenDialog(false);
       const response = await axios.get('http://localhost:8080/api/books', {
         headers: {
@@ -82,6 +86,7 @@ const BookList = ({ isAdmin = true }) => {
       });
       setBooks(response.data);
     } catch (err) {
+      console.log('фввывывыфвфывфывыфвфвывфвфывфывввфвывф', newBook);
       alert('Failed to add book');
     }
   };
@@ -121,7 +126,7 @@ const BookList = ({ isAdmin = true }) => {
     <div className={`book-list ${isAdmin ? 'admin-view' : ''}`}>
       <div className="book-list-header">
         <h2>{isAdmin ? 'Manage Books' : 'Available Books'}</h2>
-        {isAdmin && (
+        {true && (
           <Button 
             variant="contained" 
             color="primary" 
@@ -142,7 +147,7 @@ const BookList = ({ isAdmin = true }) => {
               <h3>{book.title}</h3>
               <p>Author: {book.author}</p>
               <p>Available: {book.availableQuantity}</p>
-              {isAdmin && (
+              {true && (
                 <div className="book-actions">
                   <Button
                     variant="contained"
@@ -181,14 +186,23 @@ const BookList = ({ isAdmin = true }) => {
             value={newBook.author}
             onChange={(e) => setNewBook({ ...newBook, author: e.target.value })}
           />
-          
+
+          <TextField
+              margin="dense"
+              label="Total Quantity"
+              type="number"
+              fullWidth
+              value={newBook.totalQuantity}
+              onChange={(e) => setNewBook({ ...newBook, totalQuantity: e.target.value })}
+          />
+
           <TextField
             margin="dense"
-            label="Quantity"
+            label="Available Quantity"
             type="number"
             fullWidth
-            value={newBook.quantity}
-            onChange={(e) => setNewBook({ ...newBook, quantity: e.target.value })}
+            value={newBook.availableQuantity}
+            onChange={(e) => setNewBook({ ...newBook, availableQuantity: e.target.value })}
           />
           <TextField
             margin="dense"

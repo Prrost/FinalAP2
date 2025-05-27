@@ -66,6 +66,7 @@ func (s *sqliteStorage) CreateBook(b domain.Book) (int64, error) {
 		b.Title, b.Author, b.ISBN, b.TotalQuantity, b.AvailableQuantity,
 	)
 	if err != nil {
+		log.Printf("failed to create book: %v", err)
 		return 0, err
 	}
 	return res.LastInsertId()
