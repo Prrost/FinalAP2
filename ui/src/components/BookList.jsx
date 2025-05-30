@@ -94,12 +94,12 @@ const BookList = ({ isAdmin = false }) => {
   const handleDeleteBook = async (bookId) => {
     try {
       const token = localStorage.getItem('token');
-      const userRole = localStorage.getItem('userRole');
-      
-      if (userRole !== 'ADMIN') {
-        alert('Only administrators can delete books');
-        return;
-      }
+      // const userRole = localStorage.getItem('userRole');
+      //
+      // if (userRole !== 'ADMIN') {
+      //   alert('Only administrators can delete books');
+      //   return;
+      // }
 
       if (window.confirm('Are you sure you want to delete this book?')) {
         await axios.delete(`http://localhost:8080/api/books/${bookId}`, {
